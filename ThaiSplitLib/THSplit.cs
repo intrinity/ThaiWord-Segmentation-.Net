@@ -188,24 +188,35 @@ namespace THSplit
         //Implemented by Supitch C.
         public string LineSegmentByDictionary(string input, int characterCountPerLine)
         {
-            Spliter spliter = new Spliter();
-            List<string> segmentedText = spliter.SegmentByDictionary(input);
-
             StringBuilder builder = new StringBuilder();
-            string currentLineText = string.Empty;
-            foreach (var word in segmentedText)
+
+            Spliter spliter = new Spliter();
+            string[] lines = input.Split('\n');
+
+            foreach (var line in lines)
             {
-                if (currentLineText.LengthTH() + word.LengthTH() > characterCountPerLine)
+                if (line == string.Empty)
                 {
-                    builder.AppendLine(currentLineText.Trim());
-                    currentLineText = word;
+                    builder.AppendLine();
                     continue;
                 }
 
-                currentLineText += word;
-            }
+                List<string> segmentedText = spliter.SegmentByDictionary(line);
+                string currentLineText = string.Empty;
+                foreach (var word in segmentedText)
+                {
+                    if (currentLineText.LengthTH() + word.LengthTH() > characterCountPerLine)
+                    {
+                        builder.AppendLine(currentLineText.Trim());
+                        currentLineText = word;
+                        continue;
+                    }
 
-            if (!string.IsNullOrEmpty(currentLineText)) builder.AppendLine(currentLineText);
+                    currentLineText += word;
+                }
+
+                if (!string.IsNullOrEmpty(currentLineText)) builder.AppendLine(currentLineText);
+            }
             
             return builder.ToString();
         }
