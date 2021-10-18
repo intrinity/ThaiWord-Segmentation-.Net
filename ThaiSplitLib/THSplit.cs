@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Reflection;
 using System.Text;
+using ThaiSplitLib;
 
 namespace THSplit
 {
@@ -21,7 +22,7 @@ namespace THSplit
             var _assembly = Assembly.GetExecutingAssembly();
             var _textStreamReader = new StreamReader(_assembly.GetManifestResourceStream("ThaiSplitLib.dictionary.txt"));
             string text = _textStreamReader.ReadToEnd();
-            allWord = text.Split(new string[] { "\r\n", "\n" }, StringSplitOptions.None);
+            allWord = text.Split(new[] { "\r\n", "\n" }, StringSplitOptions.None);
             foreach (var word in allWord)
             {
                 if (!_dictionary.ContainsKey(word[0]))
@@ -66,11 +67,11 @@ namespace THSplit
             return allWord;
         }
 
-        public List<string> SegmentByDictionary(string input)
+        public List<string> SegmentByDictionary(string input, bool removeSpace = false)
         {
             // check space
             // eng type
-            string[] inputSplitSpace = input.Split(' ');
+            string[] inputSplitSpace = removeSpace ? input.Split(' ') : new[] { input };
             List<string> outputList = new List<string>();
             foreach (string item in inputSplitSpace)
             {
@@ -182,6 +183,31 @@ namespace THSplit
 
             }
             return outputList;
+        }
+
+        //Implemented by Supitch C.
+        public string LineSegmentByDictionary(string input, int characterCountPerLine)
+        {
+            Spliter spliter = new Spliter();
+            List<string> segmentedText = spliter.SegmentByDictionary(input);
+
+            StringBuilder builder = new StringBuilder();
+            string currentLineText = string.Empty;
+            foreach (var word in segmentedText)
+            {
+                if (currentLineText.LengthTH() + word.LengthTH() > characterCountPerLine)
+                {
+                    builder.AppendLine(currentLineText.Trim());
+                    currentLineText = word;
+                    continue;
+                }
+
+                currentLineText += word;
+            }
+
+            if (!string.IsNullOrEmpty(currentLineText)) builder.AppendLine(currentLineText);
+            
+            return builder.ToString();
         }
 
         public bool IsConsonant(char charNumber)

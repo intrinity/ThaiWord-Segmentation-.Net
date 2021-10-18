@@ -46,6 +46,7 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>Resources.resx</DependentUpon>
     </Compile>
+    <Compile Include="StringExtension.cs" />
     <Compile Include="THSplit.cs" />
   </ItemGroup>
   <ItemGroup>
